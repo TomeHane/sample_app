@@ -4,7 +4,7 @@ class StaticPagesControllerTest < ActionDispatch::IntegrationTest
   test 'should get home' do
     get static_pages_home_url
     assert_response :success # レスポンスが正常に返ってくるか？
-    assert_select 'title', 'Home | Ruby on Rails Tutorial Sample App' # <title>タグの中身が一致しているか？
+    assert_select 'title', 'Ruby on Rails Tutorial Sample App' # <title>タグの中身が一致しているか？
   end
 
   test 'should get help' do
