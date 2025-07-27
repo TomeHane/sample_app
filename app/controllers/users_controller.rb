@@ -6,5 +6,26 @@ class UsersController < ApplicationController
     # debugger
   end
 
-  def new; end
+  # GET /users/new
+  def new
+    @user = User.new
+  end
+
+  # POST /users (+ params)
+  def create
+    @user = User.new(user_params)
+    if @user.save
+      # 保存の成功をここで扱う。
+    else
+      # もう一回newテンプレートを表示する
+      render 'new', status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  # ストロングパラメータ
+  def user_params
+    params.require(:user).permit(:name, :email, :password, :password_confirmation)
+  end
 end
