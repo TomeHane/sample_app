@@ -15,7 +15,14 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      # 保存の成功をここで扱う。
+      flash[:success] = "Welcome to the Sample App!"
+      # GET "/users/#{@user.id}"
+      redirect_to @user
+      # redirect_to user_path(@user)
+      # redirect_to user_path(@user.id)
+      # redirect_to user_path(1)
+      #             => /users/1
+      # 以上のように、リダイレクト先をRailsが推察してくれる
     else
       # もう一回newテンプレートを表示する
       render 'new', status: :unprocessable_entity
