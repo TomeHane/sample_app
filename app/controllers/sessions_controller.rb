@@ -18,4 +18,10 @@ class SessionsController < ApplicationController
       render 'new', status: :unprocessable_entity
     end
   end
+
+  # DELETE /logout
+  def destroy
+    log_out
+    redirect_to root_url, status: :see_other # root_pathでもいいが、慣習的にroot_urlを指定する
+  end
 end
