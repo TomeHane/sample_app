@@ -31,5 +31,7 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     follow_redirect!
     # usersのshowテンプレートが呼び出されているか
     assert_template 'users/show'
+    # ログインしているか（is_logged_in?は、test/test_helper.rbに記述）
+    assert is_logged_in?
   end
 end
