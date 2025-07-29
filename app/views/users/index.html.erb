@@ -1,0 +1,14 @@
+<% provide(:title, 'All users') %>
+<h1>All users</h1>
+
+<%= will_paginate %>
+
+<ul class="users">
+  <%# Railsでは「render @モデルの集合」すると、自動的にeach文で各モデルをrenderしてくれる %>
+  <%= render @users %>
+  <%# @users.each do |user| %>
+    <%#= render user %>
+  <%# end %>
+</ul>
+
+<%= will_paginate %>

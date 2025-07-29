@@ -36,6 +36,11 @@ module SessionsHelper
     end
   end
 
+  # 渡されたユーザーがカレントユーザーであればtrueを返す
+  def current_user?(user)
+    user && user == current_user
+  end
+
   # ユーザーがログインしていればtrue、その他ならfalseを返す
   def logged_in?
     !current_user.nil?
@@ -59,14 +64,20 @@ module SessionsHelper
     # トークンをcookieに永続的に保存する
     cookies.permanent[:remember_token] = user.remember_token
   end
-end
 
-# 引数ありのforgetメソッド（クラスメソッド）
-# 永続的セッションを破棄する
-def forget(user)
-  # user.rbのforgetメソッドを呼び出し、DBに記憶したダイジェストを削除する（nilにする）
-  user.forget
-  # cookieに保存したユーザIDとトークンを削除する
-  cookies.delete(:user_id)
-  cookies.delete(:remember_token)
+  # 引数ありのforgetメソッド（クラスメソッド）
+  # 永続的セッションを破棄する
+  def forget(user)
+    # user.rbのforgetメソッドを呼び出し、DBに記憶したダイジェストを削除する（nilにする）
+    user.forget
+    # cookieに保存したユーザIDとトークンを削除する
+    cookies.delete(:user_id)
+    cookies.delete(:remember_token)
+  end
+
+  # アクセスしようとしたURLを保存する
+  def store_location
+    # GETリクエストの場合、リクエストのURL（ユーザがアクセスしようとしていた場所）をセッションに保存する
+    session[:forwarding_url] = request.original_url if request.get?
+  end
 end

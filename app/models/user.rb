@@ -11,8 +11,10 @@ class User < ApplicationRecord
                     length: { maximum: 255 },
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: true
+  # allow_nil: trueでパスワードが空であることを許容しているが、
+  # has_secure_passwordで、ユーザ生成時にパスワードがnilでないことをチェックしているので問題ない
   has_secure_password
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
 
   # 渡された文字列のハッシュ値を返す
   def User.digest(string)
