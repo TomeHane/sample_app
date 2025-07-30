@@ -41,7 +41,8 @@ Rails.application.configure do
 
   # メール設定
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = true
+  # メールが送れない場合、エラーを返すか（Gmailを使うときはtrueにすること）
+  config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
 
   host = 'super-sniffle-4p79wv4r4wq357q4-3000.app.github.dev' # ここをコピペすると失敗します。自分の環境のホストに変えてください。
