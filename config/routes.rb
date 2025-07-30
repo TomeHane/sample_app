@@ -14,4 +14,5 @@ Rails.application.routes.draw do
   # onlyを使うと、追加するアクションを限定できる
   # GET /account_activation/<token>/edit
   resources :account_activations, only: [:edit]
+  resources :password_resets,     only: [:new, :create, :edit, :update]
 end
