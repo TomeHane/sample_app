@@ -11,4 +11,7 @@ Rails.application.routes.draw do
 
   #RESTfulなアクションを７つ追加する
   resources :users
+  # onlyを使うと、追加するアクションを限定できる
+  # GET /account_activation/<token>/edit
+  resources :account_activations, only: [:edit]
 end

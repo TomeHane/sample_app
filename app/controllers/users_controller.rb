@@ -26,17 +26,27 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      # ユーザー登録が成功したらそのままログインする
-      reset_session
-      log_in @user
-      flash[:success] = "Welcome to the Sample App!"
-      # GET "/users/#{@user.id}"
-      redirect_to @user
-      # redirect_to user_path(@user)
-      # redirect_to user_path(@user.id)
-      # redirect_to user_path(1)
-      #             => /users/1
-      # 以上のように、リダイレクト先をRailsが推察してくれる
+      # UserオブジェクトをDBにINSERTした際、user.rbのcreate_activation_digestメソッドが動くので、
+      # このタイミングで@userにはactivation_token（とactivation_digest）が入っている
+      # deliver_now：メールオブジェクトを今すぐ送信する
+      # UserMailer.account_activation(@user).deliver_now
+      # ↓ メソッド化によるリファクタリング
+      @user.send_activation_email
+      flash[:info] = "Please check your email to activate your account."
+      redirect_to root_url
+
+      # サインアップ後のログイン処理を廃止
+      ## ユーザー登録が成功したらそのままログインする
+      #reset_session
+      #log_in @user
+      #flash[:success] = "Welcome to the Sample App!"
+      ## GET "/users/#{@user.id}"
+      #redirect_to @user
+      ## redirect_to user_path(@user)
+      ## redirect_to user_path(@user.id)
+      ## redirect_to user_path(1)
+      ##             => /users/1
+      ## 以上のように、リダイレクト先をRailsが推察してくれる
     else
       # もう一回newテンプレートを表示する
       render 'new', status: :unprocessable_entity

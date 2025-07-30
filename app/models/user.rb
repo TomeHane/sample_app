@@ -1,9 +1,14 @@
 class User < ApplicationRecord
   # 仮想的な（DBに保存されない）カラム
-  # 実際にDBに保存されるのはトークンをハッシュ化したもの（remember_digest）
-  attr_accessor :remember_token
-
-  before_save { self.email = email.downcase }
+  # 実際にDBに保存されるのはトークンをハッシュ化したもの（ダイジェスト）
+  attr_accessor :remember_token, :activation_token
+  
+  # DBにUPSERTされる直前に動く
+  # before_save { self.email = email.downcase }
+  before_save   :downcase_email
+  # DBにINSERTされる直前に動く
+  before_create :create_activation_digest
+  
   validates :name, presence: true,
                    length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -42,10 +47,13 @@ class User < ApplicationRecord
   end
 
   # 渡されたトークンがダイジェストと一致したらtrueを返す
-  def authenticated?(remember_token)
+  def authenticated?(attribute, token)
+    # インスタンス.send("メソッド名")で、指定のメソッドを呼び出すことができる
+    # ex. @user.send("remember_digest") => @user.remember_digest
+    digest = send("#{attribute}_digest")
     # DBのダイジェストがnilだったら、処理を中断してfalseを返す
-    return false if remember_digest.nil?
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # 引数なしのforgetメソッド（インスタンスメソッド）
@@ -53,5 +61,29 @@ class User < ApplicationRecord
   def forget
     # remember_digestカラムをnilに更新する（接頭のself.が省略されている）
     update_attribute(:remember_digest, nil)
+  end
+
+  # アカウントを有効にする
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  # 有効化用のメールを送信する
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  private
+
+  # メールアドレスをすべて小文字にする
+  def downcase_email
+    self.email = email.downcase
+  end
+
+  # 有効化トークンとダイジェストを作成および代入する
+  def create_activation_digest
+    self.activation_token  = User.new_token
+    self.activation_digest = User.digest(activation_token)
   end
 end

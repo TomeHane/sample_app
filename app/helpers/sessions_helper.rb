@@ -27,7 +27,8 @@ module SessionsHelper
       # 復号したユーザIDでDBからUserオブジェクトを取得する
       user = User.find_by(id: user_id)
       # 該当のユーザが見つかり、かつダイジェストが一致した場合
-      if user && user.authenticated?(cookies[:remember_token])
+      # :rememberをシンボルにしているのは、シンボル≒メソッド関連という慣習のため
+      if user && user.authenticated?(:remember, cookies[:remember_token])
         # ログイン処理を行う
         log_in user
         # インスタンス変数にUserオブジェクトを格納する
