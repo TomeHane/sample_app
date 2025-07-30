@@ -13,6 +13,7 @@ class UsersController < ApplicationController
   # GET /users/:id
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page])
     # このタイミングで処理を止める（Railsサーバのターミナルで確認できる）
     # debugger
   end

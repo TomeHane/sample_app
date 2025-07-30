@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  # has_many：ユーザーがマイクロポストを複数所有する関連付け
+  # dependent: :destroy：マイクロポストは、その所有者（ユーザー）と一緒に破棄されることを保証する
+  has_many :microposts, dependent: :destroy
+
   # 仮想的な（DBに保存されない）カラム
   # 実際にDBに保存されるのはトークンをハッシュ化したもの（ダイジェスト）
   attr_accessor :remember_token, :activation_token, :reset_token
