@@ -39,10 +39,11 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
+  # メール設定
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.perform_caching = false
 
-  # メールプレビュー
   host = 'super-sniffle-4p79wv4r4wq357q4-3000.app.github.dev' # ここをコピペすると失敗します。自分の環境のホストに変えてください。
   # host = 'localhost:3000'                     # ローカル環境
   # クラウドIDEの場合は以下をお使いください
@@ -50,7 +51,17 @@ Rails.application.configure do
   # localhostで開発している場合は以下をお使いください
   # config.action_mailer.default_url_options = { host: host, protocol: 'http' }
 
-  config.action_mailer.perform_caching = false
+  config.action_mailer.delivery_method = :smtp
+
+  # Gmail
+  config.action_mailer.smtp_settings = {
+  address: "smtp.gmail.com",
+  domain: "gmail.com",
+  port: 587,
+  user_name: Rails.application.credentials.dig(:gmail, :email),
+  password: Rails.application.credentials.dig(:gmail, :app_password),
+  authentication: :login
+  }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

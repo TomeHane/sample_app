@@ -72,13 +72,25 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   host = 'https://sample-app-0xjy.onrender.com'
   config.action_mailer.default_url_options = { host: host }
-  ActionMailer::Base.smtp_settings = {
-    :port           => 587,
-    :address        => 'smtp.mailgun.org',
-    :user_name      => ENV['MAILGUN_SMTP_LOGIN'],
-    :password       => ENV['MAILGUN_SMTP_PASSWORD'],
-    :domain         => host,
-    :authentication => :plain,
+
+  # Mailgun
+  # ActionMailer::Base.smtp_settings = {
+  #   :port           => 587,
+  #   :address        => 'smtp.mailgun.org',
+  #   :user_name      => ENV['MAILGUN_SMTP_LOGIN'],
+  #   :password       => ENV['MAILGUN_SMTP_PASSWORD'],
+  #   :domain         => host,
+  #   :authentication => :plain,
+  # }
+
+  # Gmail
+  config.action_mailer.smtp_settings = {
+  address: "smtp.gmail.com",
+  domain: "gmail.com",
+  port: 587,
+  user_name: Rails.application.credentials.dig(:gmail, :email),
+  password: Rails.application.credentials.dig(:gmail, :app_password),
+  authentication: :login
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
