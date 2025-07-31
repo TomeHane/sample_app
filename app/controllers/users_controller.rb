@@ -88,14 +88,15 @@ class UsersController < ApplicationController
 
   # beforeフィルタ
 
-  # ログイン済みユーザーかどうか確認
-  def logged_in_user
-    unless logged_in?
-      store_location
-      flash[:danger] = "Please log in."
-      redirect_to login_url, status: :see_other
-    end
-  end
+  # 親クラス（users_controller.rb）にメソッドを移動 => 他のコントローラーでも使えるようになる
+  ## ログイン済みユーザーかどうか確認
+  #def logged_in_user
+  #  unless logged_in?
+  #    store_location
+  #    flash[:danger] = "Please log in."
+  #    redirect_to login_url, status: :see_other
+  #  end
+  #end
 
   # 正しいユーザーかどうか確認
   # ログインの有無はlogged_in_userでチェックしているので、ログイン周りは気にしなくてOK

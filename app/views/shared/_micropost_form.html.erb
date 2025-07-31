@@ -1,0 +1,8 @@
+<%= form_with(model: @micropost) do |f| %>
+  <%# 第２引数で、パーシャルにf.object（@micropost）を渡している %>
+  <%= render 'shared/error_messages', object: f.object %>
+  <div class="field">
+    <%= f.text_area :content, placeholder: "Compose new micropost..." %>
+  </div>
+  <%= f.submit "Post", class: "btn btn-primary" %>
+<% end %>

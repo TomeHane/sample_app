@@ -96,6 +96,14 @@ class User < ApplicationRecord
     self.reset_sent_at < 2.hours.ago
   end
 
+  # 試作feedの定義
+  # 完全な実装は次章の「ユーザーをフォローする」を参照
+  def feed
+    # ユーザ自身のID（self.id）と一致するマイクロポストをDBから取得する
+    # ?があることで、SQLクエリに代入する前にidがエスケープされ、SQLインジェクションを防げる
+    Micropost.where("user_id = ?", id)
+  end
+
   private
 
   # メールアドレスをすべて小文字にする
