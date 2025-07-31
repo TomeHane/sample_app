@@ -9,11 +9,21 @@ Rails.application.routes.draw do
   post   "/login",   to: "sessions#create"
   delete "/logout",  to: "sessions#destroy"
 
-  #RESTfulなアクションを７つ追加する
+  # RESTfulなアクション7つに加えて、ネストでアクションを追加できる（掘り過ぎ注意！）
+  resources :users do
+    member do
+      get :following, :followers
+    end
+  end
+  # => GET /users/<user_id>/following
+  # => GET /users/<user_id>/followers
+
+  # RESTfulなアクションを７つ追加する
   resources :users
   # onlyを使うと、追加するアクションを限定できる
   # GET /account_activation/<token>/edit
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :microposts,          only: [:create, :destroy]
+  resources :relationships,       only: [:create, :destroy]
 end

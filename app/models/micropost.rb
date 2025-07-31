@@ -1,6 +1,7 @@
 class Micropost < ApplicationRecord
   # マイクロポストがユーザーに所属する（belongs_to）関連付け
   belongs_to :user
+  # => Micropost.user_id と User(.id) が紐づく
   # DBから複数のデータを取得する際、デフォルトで新しい順にする
   # データを取得するタイミングで都度メソッドを実行する必要があるため、lambdaを用いる
   default_scope -> { order(created_at: :desc) }

@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   # edit, updateメソッドが呼び出される前に、logged_in_user, correct_userメソッドを呼び出す
   # 必ずlogged_in_userフィルター => correct_user の順番にすること（∵correct_userはログインしていることが前提）
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
+  before_action :logged_in_user, only: [:index, :edit, :update, :destroy,
+                                        :following, :followers]
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: :destroy
 
@@ -77,6 +78,24 @@ class UsersController < ApplicationController
     User.find(params[:id]).destroy
     flash[:success] = "User deleted"
     redirect_to users_url, status: :see_other
+  end
+
+  # following, followersアクションはどちらも同じテンプレートを参照する
+  # 異なるのはデータの中身のみ（インスタンス変数名は統一する必要がある）
+  # GET /users/:id/following
+  def following
+    @title = "Following"
+    @user  = User.find(params[:id])
+    @users = @user.following.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  # GET /users/:id/followers
+  def followers
+    @title = "Followers"
+    @user  = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
   end
 
   private

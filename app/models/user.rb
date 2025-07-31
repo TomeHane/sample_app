@@ -2,17 +2,39 @@ class User < ApplicationRecord
   # has_many：ユーザーがマイクロポストを複数所有する関連付け
   # dependent: :destroy：マイクロポストは、その所有者（ユーザー）と一緒に破棄されることを保証する
   has_many :microposts, dependent: :destroy
+  # => Default: class_name: "Micropost"
+  # => Default: foreign_key: "user_id"
+
+  # class_name:  参照するモデル[クラス]
+  # foreign_key: 外部キー（Userテーブルのidカラムと紐づくカラム）
+  has_many :active_relationships, class_name:  "Relationship",
+                                  foreign_key: "follower_id",
+                                  dependent:   :destroy
+  # => Default: class_name:  "ActiveRelationship" NG
+  # => Default: foreign_key: "user_id"            NG
+
+  has_many :passive_relationships, class_name:  "Relationship",
+                                   foreign_key: "followed_id",
+                                   dependent:   :destroy
+
+  # 1.Userオブジェクトはfollowingメソッドを呼び出せるようになる
+  # 2.followingメソッドは、@user.active_relationships.map(&:followed) と同義！
+  has_many :following, through: :active_relationships,
+                       source: :followed
+
+  has_many :followers, through: :passive_relationships,
+                       source: :follower
 
   # 仮想的な（DBに保存されない）カラム
   # 実際にDBに保存されるのはトークンをハッシュ化したもの（ダイジェスト）
   attr_accessor :remember_token, :activation_token, :reset_token
-  
+
   # DBにUPSERTされる直前に動く
   # before_save { self.email = email.downcase }
   before_save   :downcase_email
   # DBにINSERTされる直前に動く
   before_create :create_activation_digest
-  
+
   validates :name, presence: true,
                    length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -102,6 +124,21 @@ class User < ApplicationRecord
     # ユーザ自身のID（self.id）と一致するマイクロポストをDBから取得する
     # ?があることで、SQLクエリに代入する前にidがエスケープされ、SQLインジェクションを防げる
     Micropost.where("user_id = ?", id)
+  end
+
+  # ユーザーをフォローする
+  def follow(other_user)
+    following << other_user unless self == other_user # DBにも反映される
+  end
+
+  # ユーザーをフォロー解除する
+  def unfollow(other_user)
+    following.delete(other_user)
+  end
+
+  # 現在のユーザーが他のユーザーをフォローしていればtrueを返す
+  def following?(other_user)
+    following.include?(other_user) # DBから取得する
   end
 
   private
