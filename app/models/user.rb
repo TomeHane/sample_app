@@ -118,12 +118,19 @@ class User < ApplicationRecord
     self.reset_sent_at < 2.hours.ago
   end
 
-  # 試作feedの定義
-  # 完全な実装は次章の「ユーザーをフォローする」を参照
+   # ユーザーのステータスフィードを返す
   def feed
+    # ユーザのフォローしている人のID（self.following_ids）と、
     # ユーザ自身のID（self.id）と一致するマイクロポストをDBから取得する
     # ?があることで、SQLクエリに代入する前にidがエスケープされ、SQLインジェクションを防げる
-    Micropost.where("user_id = ?", id)
+    #Micropost.where("user_id IN (?) OR user_id = ?", following_ids, id)
+
+    # さらにSQLを一行にまとめることも可能（サブセレクトを使う）
+    # whereメソッド内の変数に、キーと値のペアを使うことも可能
+    following_ids = "SELECT followed_id FROM relationships
+                     WHERE  follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids})
+                     OR user_id = :user_id", user_id: id)
   end
 
   # ユーザーをフォローする
